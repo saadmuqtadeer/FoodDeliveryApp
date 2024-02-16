@@ -1,0 +1,23 @@
+<!-- pricing_structure.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Pricing Structure</h1>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <ul class="list-group">
+                {% for pricing in pricings %}
+                    <li class="list-group-item">
+                        <strong>Organization:</strong> {{ pricing.organization.name }}<br>
+                        <strong>Item Type:</strong> {{ pricing.item.type }}<br>
+                        <strong>Base Distance:</strong> {{ pricing.base_distance_in_km }} KM<br>
+                        <strong>Km Price:</strong> {{ pricing.km_price }}<br>
+                        <strong>Fix Price:</strong> {{ pricing.fix_price }}<br>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

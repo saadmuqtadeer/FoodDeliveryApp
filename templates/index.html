@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div id="result" class="text-center mb-4">
+                <h2 class="font-weight-bold">Result</h2>
+            </div> <!-- Result field -->
+            <hr>
+            <h2 class="text-center mb-4">Delivery Cost Calculator</h2>
+            <form id="deliveryCostForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="zone">Zone:</label>
+                    <input type="text" id="zone" name="zone" value="Central" class="form-control" disabled />
+                    <small class="form-text text-muted">Currently, our services are only available in the Central zone.</small>
+                </div>
+                <div class="form-group">
+                    <label for="organization">Organization:</label>
+                    <select id="organization" name="organization" class="form-control">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="totalDistance">Total Distance:</label>
+                    <input type="number" id="totalDistance" name="total_distance" placeholder="Distance in KM" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="itemType">Item Type:</label>
+                    <select id="itemType" name="item_type" class="form-control">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Calculate</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Fetch organizations from backend API
+    fetch('/api/organizations/')
+    .then((response) => response.json())
+    .then((data) => {
+        const organizationDropdown = document.getElementById('organization')
+        data.forEach((org) => {
+            const option = document.createElement('option')
+            option.value = org.id
+            option.textContent = org.name
+            organizationDropdown.appendChild(option)
+        })
+    })
+    .catch((error) => {
+        console.error('Error fetching organizations:', error)
+    })
+
+    // Fetch item types from backend API
+    fetch('/api/item-types/')
+    .then((response) => response.json())
+    .then((data) => {
+        const itemTypeDropdown = document.getElementById('itemType')
+        data.forEach((type) => {
+            const option = document.createElement('option')
+            option.value = type
+            option.textContent = type
+            itemTypeDropdown.appendChild(option)
+        })
+    })
+    .catch((error) => {
+        console.error('Error fetching item types:', error)
+    })
+
+    document.getElementById('deliveryCostForm').addEventListener('submit', function (event) {
+        event.preventDefault()
+        const formData = new FormData(this)
+        const totalDistanceInput = document.getElementById('totalDistance')
+        const totalDistance = totalDistanceInput.value.trim() // Remove leading and trailing whitespace
+        if (totalDistance === '') {
+            console.error('Error: Total distance cannot be empty')
+            return
+        }
+        formData.set('total_distance', totalDistance)
+        fetch('', {
+            method: 'POST',
+            body: formData
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            document.getElementById('result').innerText = `Total Price: ${data.total_price}`
+        })
+        .catch((error) => {
+            console.error('Error:', error)
+        })
+    })
+
+    document.getElementById('totalDistance').addEventListener('input', function (event) {
+        const totalDistance = event.target.value
+        document.getElementById('deliveryCostForm').querySelector('[name="total_distance"]').value = totalDistance
+    })
+</script>
+{% endblock %}
+
+{% block extrastyles %}
+<style>
+    #result {
+        font-size: 18px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 50px; /* Adjust margin-bottom as needed */
+    }
+    footer {
+        margin-top: 50px; /* Add margin top to create space between the footer and the result field */
+    }
+</style>
+{% endblock %}
