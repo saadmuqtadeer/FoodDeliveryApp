@@ -27,8 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['fooddeliveryapp1.onrender.com']
 
-
-
 # Application definition
 
 INSTALLED_APPS = [
